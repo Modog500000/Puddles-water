@@ -1,6 +1,5 @@
 package eu.midnightdust.puddles;
 
-import eu.midnightdust.puddles.block.PuddleBlock;
 import eu.midnightdust.puddles.config.PuddlesConfig;
 import eu.pb4.polymer.core.api.item.PolymerBlockItem;
 import net.fabricmc.api.ModInitializer;
@@ -23,27 +22,11 @@ import net.minecraft.util.Identifier;
 public class Puddles implements ModInitializer {
     public static final String MOD_ID = "puddles";
     public static final Identifier PUDDLE_ID = id("puddle");
-    public static final PuddleBlock Puddle = new PuddleBlock();
     private final static EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(id("puddle_speed"), 100, EntityAttributeModifier.Operation.ADD_VALUE);
 
     @Override
     public void onInitialize() {
         PuddlesConfig.init(MOD_ID, PuddlesConfig.class);
-        Registry.register(Registries.BLOCK, PUDDLE_ID, Puddle);
-        Registry.register(Registries.ITEM, PUDDLE_ID, new PolymerBlockItem(Puddle, new Item.Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, PUDDLE_ID)), Items.POTION));
-        ServerTickEvents.END_WORLD_TICK.register(world -> world.getPlayers().forEach(player -> {
-            EntityAttributeInstance entityAttributeInstance = player.getAttributes().getCustomInstance(EntityAttributes.WATER_MOVEMENT_EFFICIENCY);
-            if (player.getBlockStateAtPos().getBlock() instanceof PuddleBlock) {
-                if (entityAttributeInstance != null) {
-                    entityAttributeInstance.removeModifier(entityAttributeModifier);
-                    entityAttributeInstance.addTemporaryModifier(entityAttributeModifier);
-                }
-                if (world.random.nextInt(30) == 0) player.playSoundToPlayer(SoundEvents.ENTITY_PLAYER_SWIM, SoundCategory.BLOCKS, 0.5f, 1.2f);
-                player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleTypes.SPLASH, false, false, player.getBlockX() + 0.5f, player.getBlockY() + 0.1f, player.getBlockZ() + 0.5f, 0.5f, 0.1f, 0.5f, 1, 2));
-            } else if (player.isInFluid()) {
-                if (entityAttributeInstance != null) entityAttributeInstance.removeModifier(entityAttributeModifier);
-            }
-        }));
     }
     public static Identifier id(String path) {
         return Identifier.of(MOD_ID, path);

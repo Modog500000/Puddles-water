@@ -3,6 +3,7 @@
   "package": "eu.midnightdust.puddles.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "MixinCampfireBlockEntity",
     "MixinServerWorld"
   ],
   "injectors": {
